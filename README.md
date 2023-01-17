@@ -1,16 +1,24 @@
-# Tiktok OAuth2 Strategy for OmniAuth.
+# This is a fork of Tiktok OAuth2 Strategy for OmniAuth by Lianowar.
 
-Supports OAuth 2.0 server-side flow with Tiktok API. 
+Supports OAuth 2.0 server-side flow with Tiktok API.
 Read the Tiktok docs for more details: https://developers.tiktok.com/doc/login-kit-web
 
 ### Tiktok access_token valid only for 24 hours!
+
+## Why a fork
+The original gem was creating authentication bug in the authorisation request phase with Tiktok.
+We corrected that bug by implementing a custom build_access_token method. We didn't create pull request because this solution is a bit "hacky" due to the fact that tiktok doesnt respect the official oauth implementation by refusing the client_id param.
+
+For more info, please check this stackoverflow question.
+
+https://stackoverflow.com/questions/74747343/tiktok-oauth-parameter-error-login-kit
 
 ## Installing
 
 Add to your `Gemfile`:
 
 ```ruby
-gem 'omniauth-tiktok'
+gem 'omniauth-tiktok', git: 'https://github.com/lasercatspro/omniauth-tiktok.git'
 ```
 
 Then `bundle install`.
@@ -23,7 +31,7 @@ Here's a quick example, adding the middleware to a Rails app in `config/initiali
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :tiktok, ENV['TIKTOK_CLIENT_ID'], ENV['TIKTOK_CLIENT_SECRET']
+  provider :tiktok, ENV['TIKTOK_CLIENT_KEY'], ENV['TIKTOK_CLIENT_SECRET'],
 end
 ```
 
