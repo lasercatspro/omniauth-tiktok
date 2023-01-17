@@ -9,9 +9,8 @@ Read the Tiktok docs for more details: https://developers.tiktok.com/doc/login-k
 The original gem was creating authentication bug in the authorisation request phase with Tiktok.
 We corrected that bug by implementing a custom build_access_token method. We didn't create pull request because this solution is a bit "hacky" due to the fact that tiktok doesnt respect the official oauth implementation by refusing the client_id param.
 
-For more info, please check this stackoverflow question.
-
-https://stackoverflow.com/questions/74747343/tiktok-oauth-parameter-error-login-kit
+For more info, please check this [stackoverflow question](https://stackoverflow.com/questions/74747343/tiktok-oauth-parameter-error-login-kit
+).
 
 ## Installing
 
