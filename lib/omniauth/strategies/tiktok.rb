@@ -15,6 +15,7 @@ module OmniAuth
         site: 'https://open-api.tiktok.com',
         authorize_url: 'https://open-api.tiktok.com/platform/oauth/connect',
         token_url: 'https://open-api.tiktok.com/oauth/access_token',
+        auth_scheme: :basic_auth,
         extract_access_token: proc do |client, hash|
           hash = hash['data']
           token = hash.delete('access_token') || hash.delete(:access_token)
@@ -55,6 +56,11 @@ module OmniAuth
 
       def callback_url
         options[:callback_url] || (full_host + script_name + callback_path)
+      end
+
+      def build_access_token
+        verifier = request.params["code"]
+        client.auth_code.get_token(verifier, {client_secret: client.secret}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
       end
 
       def authorize_params
