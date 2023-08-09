@@ -1,25 +1,48 @@
 # frozen_string_literal: true
 
 require 'omniauth/strategies/oauth2'
+module OAuth2
+  class Authenticator
+    def apply(params)
+      case mode.to_sym
+      when :basic_auth
+        apply_basic_auth(params)
+      when :request_body
+        apply_params_auth(params)
+      when :tls_client_auth
+        apply_client_id(params)
+      when :private_key_jwt
+        params
+      when :tiktok_auth_sceme
+        apply_tiktok_auth_scheme(params)
+      else
+        raise NotImplementedError
+      end
+    end
 
+    def apply_tiktok_auth_scheme(params)
+      result = {}
+      result['client_secret'] = secret unless secret.nil?
+      result.merge(params)
+    end
+  end
+end
 module OmniAuth
   module Strategies
     class Tiktok < OmniAuth::Strategies::OAuth2
       class NoAuthorizationCodeError < StandardError; end
       DEFAULT_SCOPE = 'user.info.basic,video.list'
-      USER_INFO_URL = 'https://open-api.tiktok.com/oauth/userinfo'
+      USER_INFO_URL = 'https://open.tiktokapis.com/v2/user/info/'
 
       option :name, 'tiktok'
 
       option :client_options, {
         site: 'https://open-api.tiktok.com',
-        authorize_url: 'https://open-api.tiktok.com/platform/oauth/connect',
-        token_url: 'https://open-api.tiktok.com/oauth/access_token',
-        auth_scheme: :basic_auth,
+        authorize_url: 'https://www.tiktok.com/v2/auth/authorize/',
+        token_url: 'https://open.tiktokapis.com/v2/oauth/token/',
+        auth_scheme: :tiktok_auth_sceme,
         extract_access_token: proc do |client, hash|
-          hash = hash['data']
-          token = hash.delete('access_token') || hash.delete(:access_token)
-          token && ::OAuth2::AccessToken.new(client, token, hash)
+          ::OAuth2::AccessToken.from_hash(client, hash)
         end
       }
 
@@ -28,7 +51,7 @@ module OmniAuth
       uid { access_token.params['open_id'] }
 
       info do
-        prune!('nickname' => raw_info['data']['display_name'])
+        prune!('username' => raw_info['username'])
       end
 
       extra do
@@ -50,17 +73,12 @@ module OmniAuth
 
       def raw_info
         @raw_info ||= access_token
-                      .get("#{USER_INFO_URL}?open_id=#{access_token.params['open_id']}&access_token=#{access_token.token}")
-                      .parsed || {}
+                      .get("#{USER_INFO_URL}?fields=username")
+                      .parsed&.dig('data', 'user') || {}
       end
 
       def callback_url
         options[:callback_url] || (full_host + script_name + callback_path)
-      end
-
-      def build_access_token
-        verifier = request.params["code"]
-        client.auth_code.get_token(verifier, {client_secret: client.secret}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
       end
 
       def authorize_params
@@ -69,6 +87,7 @@ module OmniAuth
           params[:response_type] = 'code'
           params.delete(:client_id)
           params[:client_key] = options.client_id
+          options.client_id = nil
         end
       end
 
@@ -76,6 +95,7 @@ module OmniAuth
         super.tap do |params|
           params.delete(:client_id)
           params[:client_key] = options.client_id
+          options.client_id = nil
         end
       end
 
