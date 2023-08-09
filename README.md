@@ -44,18 +44,20 @@ Here's an example Auth Hash available in `request.env['omniauth.auth']`:
 
 ```
 {
-  provider: 'tiktok',
-  uid: '1234567',
-  info: {
-    display_name: 'ABCDEF'
+"provider"=>"tiktok",
+ "uid"=>"_123456634",
+ "info"=>{"username"=>"USERNAME"},
+ "credentials"=>
+  {
+    "token"=>
+    "act.token1234343",
+   "refresh_token"=>
+    "rft.refresh_token12324343",
+   "expires_at"=>12345678,
+   "expires"=>true,
+   "refresh_token_expires_at"=>1234566
   },
-  credentials: {
-    token: 'ABCDEF...', # OAuth 2.0 access_token, which you may wish to store
-    expires_at: 1321747205, # when the access token expires (it always will)
-    expires: true, # this will always be true
-    refresh_token: 'ABCDEF', # it will be valid for 365 days
-    refresh_token_expires_at: 1111111 # timestamp
-  }
+ "extra"=>{"raw_info"=>{"username"=>"USERNAME"}
 }
 ```
 
