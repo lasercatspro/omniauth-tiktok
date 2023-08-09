@@ -39,6 +39,7 @@ Here's a quick example, adding the middleware to a Rails app in `config/initiali
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :tiktok, ENV['TIKTOK_CLIENT_KEY'], ENV['TIKTOK_CLIENT_SECRET'],
+  scope: "user.info.basic,video.list,video.upload,video.publish"
 end
 ```
 
