@@ -1,4 +1,4 @@
-### DISCLAIMER READ UPDATE BEFORE USING THIS FORK
+## DISCLAIMER READ UPDATE BEFORE USING THIS FORK
 
 
 # This is a fork of Tiktok OAuth2 Strategy for OmniAuth.
@@ -15,7 +15,7 @@ We corrected that bug by implementing a custom build_access_token method. We did
 For more info, please check this [stackoverflow question](https://stackoverflow.com/questions/74747343/tiktok-oauth-parameter-error-login-kit
 ).
 
-# UPDATE of 08/09/2023
+#### UPDATE of 08/09/2023
 We'v migrated the old API using a fork by [acorn-influence](https://github.com/acorn-influence/omniauth-tiktok). Since Tiktok change their API, they put more restricted way of reading params during the OAuth callback phase. 
 We modify our way to get rid of "client_id" by monkey patch OAuth2::Authenticator's method ``apply(params)``. This monkey patch had a special auth_scheme for tiktok that doesnt send ``client_id``. 
 We'v tested out by authenticate through other omniauth-strategies and it seems to work, but as we all know **monkey patch can be dangereous and cause bugs**.
